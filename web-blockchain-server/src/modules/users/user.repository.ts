@@ -1,0 +1,2 @@
+import { UserModel, type User } from "./user.model";
+export class UserRepository { findByEmail(email: string) { return UserModel.findOne({ email: email.toLowerCase() }).exec(); } findById(id: string) { return UserModel.findById(id).exec(); } create(input: Pick<User, "email" | "passwordHash" | "fullName" | "role">) { return UserModel.create(input); } count() { return UserModel.countDocuments(); } }

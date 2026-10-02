@@ -1,0 +1,8 @@
+[
+  { "type": "function", "name": "authorizedIssuers", "stateMutability": "view", "inputs": [{ "name": "issuer", "type": "address" }], "outputs": [{ "name": "", "type": "bool" }] },
+  { "type": "function", "name": "setIssuerAuthorization", "stateMutability": "nonpayable", "inputs": [{ "name": "issuer", "type": "address" }, { "name": "authorized", "type": "bool" }], "outputs": [] },
+  { "type": "function", "name": "getCertificate", "stateMutability": "view", "inputs": [{ "name": "certificateCode", "type": "string" }], "outputs": [{ "name": "documentHash", "type": "bytes32" }, { "name": "issuedAt", "type": "uint256" }, { "name": "issuer", "type": "address" }, { "name": "exists", "type": "bool" }, { "name": "revoked", "type": "bool" }] },
+  { "type": "function", "name": "verifyCertificate", "stateMutability": "view", "inputs": [{ "name": "certificateCode", "type": "string" }, { "name": "documentHash", "type": "bytes32" }], "outputs": [{ "name": "", "type": "bool" }] },
+  { "type": "function", "name": "issueCertificate", "stateMutability": "nonpayable", "inputs": [{ "name": "certificateCode", "type": "string" }, { "name": "documentHash", "type": "bytes32" }], "outputs": [] },
+  { "type": "function", "name": "revokeCertificate", "stateMutability": "nonpayable", "inputs": [{ "name": "certificateCode", "type": "string" }], "outputs": [] }
+]

@@ -1,0 +1,4 @@
+import { InferSchemaType, Schema, model } from "mongoose";
+const studentSchema = new Schema({ userId: { type: Schema.Types.ObjectId, ref: "User" }, studentCode: { type: String, required: true, unique: true, trim: true }, fullName: { type: String, required: true, trim: true }, dateOfBirth: Date, institutionId: { type: Schema.Types.ObjectId, ref: "Institution" }, majorId: { type: Schema.Types.ObjectId, ref: "Major" }, courseId: { type: Schema.Types.ObjectId, ref: "Course" }, classId: { type: Schema.Types.ObjectId, ref: "TrainingClass" }, major: { type: String, required: true, trim: true }, className: { type: String, trim: true }, course: { type: String, trim: true } }, { timestamps: true });
+export type Student = InferSchemaType<typeof studentSchema>;
+export const StudentModel = model("Student", studentSchema);

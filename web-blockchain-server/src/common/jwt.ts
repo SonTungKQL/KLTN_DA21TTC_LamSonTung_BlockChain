@@ -1,0 +1,7 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+import type { AppEnvironment } from "../config/env";
+import { AppError } from "../http/error";
+export interface JwtPayload { sub: string; role: "ADMIN" | "STUDENT"; exp: number; }
+const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString("base64url");
+export function signToken(payload: Omit<JwtPayload, "exp">, environment: AppEnvironment): string { const body: JwtPayload = { ...payload, exp: Math.floor(Date.now() / 1000) + environment.JWT_EXPIRES_IN_SECONDS }; const base = `${encode({ alg: "HS256", typ: "JWT" })}.${encode(body)}`; return `${base}.${createHmac("sha256", environment.JWT_SECRET).update(base).digest("base64url")}`; }
+export function verifyToken(token: string, environment: AppEnvironment): JwtPayload { const [header, body, signature] = token.split("."); if (!header || !body || !signature) throw new AppError("Invalid access token", 401, "UNAUTHORIZED"); const base = `${header}.${body}`; const expected = createHmac("sha256", environment.JWT_SECRET).update(base).digest(); const received = Buffer.from(signature, "base64url"); if (expected.length !== received.length || !timingSafeEqual(expected, received)) throw new AppError("Invalid access token", 401, "UNAUTHORIZED"); const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as JwtPayload; if (!payload.sub || !["ADMIN", "STUDENT"].includes(payload.role) || payload.exp <= Math.floor(Date.now() / 1000)) throw new AppError("Access token expired or invalid", 401, "UNAUTHORIZED"); return payload; }

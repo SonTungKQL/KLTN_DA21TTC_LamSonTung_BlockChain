@@ -1,0 +1,9 @@
+import type { Request, Response } from "express";
+import { z } from "zod";
+import { sendSuccess } from "../../http/response";
+import { StudentService } from "./student.service";
+const id = z.string().regex(/^[a-f\d]{24}$/i, "Invalid ObjectId");
+const academicFields = { institutionId: id, majorId: id, courseId: id, classId: id };
+const body = z.object({ studentCode: z.string().trim().min(1), fullName: z.string().trim().min(1), dateOfBirth: z.string().date().optional(), ...academicFields, email: z.string().email().optional(), password: z.string().min(8).optional() }).refine((input) => Boolean(input.email) === Boolean(input.password), { message: "email and password must be provided together" });
+const updateBody = z.object({ studentCode: z.string().trim().min(1).optional(), fullName: z.string().trim().min(1).optional(), dateOfBirth: z.string().date().optional(), institutionId: id.optional(), majorId: id.optional(), courseId: id.optional(), classId: id.optional() });
+export class StudentController { constructor(private readonly service = new StudentService()) {} list = async (request: Request, response: Response) => { const query = z.object({ keyword: z.string().optional(), page: z.coerce.number().int().positive().default(1), limit: z.coerce.number().int().positive().max(100).default(20) }).parse(request.query); return sendSuccess(response, await this.service.list(query)); }; create = async (request: Request, response: Response) => sendSuccess(response, await this.service.create(body.parse(request.body)), 201); detail = async (request: Request, response: Response) => sendSuccess(response, await this.service.getRequired(id.parse(request.params.id))); update = async (request: Request, response: Response) => sendSuccess(response, await this.service.update(id.parse(request.params.id), updateBody.parse(request.body))); }

@@ -1,0 +1,3 @@
+import { AppError } from "../../http/error";
+import { UserRepository } from "./user.repository";
+export class UserService { constructor(private readonly repository = new UserRepository()) {} async findRequired(id: string) { const user = await this.repository.findById(id); if (!user) throw new AppError("User not found", 404, "USER_NOT_FOUND"); return user; } async findByEmail(email: string) { return this.repository.findByEmail(email); } async create(input: { email: string; passwordHash: string; fullName: string; role: "ADMIN" | "STUDENT" }) { if (await this.repository.findByEmail(input.email)) throw new AppError("Email already exists", 409, "EMAIL_EXISTS"); return this.repository.create(input); } count() { return this.repository.count(); } }

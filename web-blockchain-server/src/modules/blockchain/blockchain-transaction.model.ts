@@ -1,0 +1,4 @@
+import { InferSchemaType, Schema, model } from "mongoose";
+const transactionSchema = new Schema({ certificateId: { type: Schema.Types.ObjectId, ref: "Certificate", required: true, index: true }, action: { type: String, enum: ["ISSUE_CERTIFICATE", "REVOKE_CERTIFICATE"], required: true }, transactionHash: { type: String, index: true, sparse: true }, network: { type: String, required: true }, chainId: { type: Number, required: true }, contractAddress: { type: String, required: true }, status: { type: String, enum: ["CREATED", "SUBMITTED", "CONFIRMED", "FAILED"], required: true }, blockNumber: Number, errorCode: String, errorMessage: String, submittedAt: Date, confirmedAt: Date, failedAt: Date }, { timestamps: true });
+export type BlockchainTransaction = InferSchemaType<typeof transactionSchema>;
+export const BlockchainTransactionModel = model("BlockchainTransaction", transactionSchema);

@@ -1,0 +1,8 @@
+import type { Request, Response } from "express";
+import { z } from "zod";
+import { AppError } from "../../http/error";
+import { sendSuccess } from "../../http/response";
+import { StudentService } from "../students/student.service";
+import { CertificateService } from "./certificate.service";
+import type { AppEnvironment } from "../../config/env";
+export class StudentCertificateController { private readonly certificates: CertificateService; private readonly students = new StudentService(); constructor(environment: AppEnvironment) { this.certificates = new CertificateService(environment); } list = async (request: Request, response: Response) => { const student = await this.students.getByUserRequired(request.auth!.userId); const query = z.object({ page: z.coerce.number().int().positive().default(1), limit: z.coerce.number().int().positive().max(100).default(20) }).parse(request.query); return sendSuccess(response, await this.certificates.list({ ...query, studentId: student._id.toString() })); }; private certificateForStudent = async (request: Request) => { const student = await this.students.getByUserRequired(request.auth!.userId); const certificate = await this.certificates.getRequired(z.string().regex(/^[a-f\d]{24}$/i).parse(request.params.id)); if (certificate.studentId._id.toString() !== student._id.toString()) throw new AppError("Certificate not found", 404, "CERTIFICATE_NOT_FOUND"); return certificate; }; detail = async (request: Request, response: Response) => sendSuccess(response, await this.certificateForStudent(request)); verificationQr = async (request: Request, response: Response) => sendSuccess(response, this.certificates.verificationQr(await this.certificateForStudent(request))); }
