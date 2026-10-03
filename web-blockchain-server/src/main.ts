@@ -6,6 +6,7 @@ async function bootstrap() {
   const environment = loadEnvironment();
   await connectToDatabase(environment);
   const app = createApp(environment);
+  console.log("this", process.env.CERTIFICATE_CONTRACT_ADDRESS);
   app.listen(environment.PORT, () =>
     console.log(
       `API listening at http://localhost:${environment.PORT} (Swagger: /api/docs)`,

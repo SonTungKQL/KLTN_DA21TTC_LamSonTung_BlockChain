@@ -92,8 +92,6 @@ export class BlockchainService {
         "INVALID_ISSUER_ADDRESS",
       );
     const signer = new Wallet(this.signingKey(institutionCode)).address;
-    console.log("signer", signer);
-    console.log("issuerAddress", issuerAddress);
     if (signer.toLowerCase() !== issuerAddress.toLowerCase())
       throw new AppError(
         "Configured issuer key does not match the institution issuer address",
@@ -190,6 +188,7 @@ export class BlockchainService {
   }
 
   private normalize(error: unknown) {
+    console.log("blockchan.serrvices");
     const message =
       error instanceof Error ? error.message : "Blockchain operation failed";
     const lower = message.toLowerCase();
