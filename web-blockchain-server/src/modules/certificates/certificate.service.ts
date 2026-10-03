@@ -440,7 +440,7 @@ export class CertificateService {
    */
   async retry(id: string) {
     let certificateCode: string | undefined;
-
+    console.log("12354");
     try {
       const certificate = await this.getRequired(id);
 

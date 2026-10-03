@@ -1,0 +1,4 @@
+npm run contract:deploy:local
+
+
+ganache --wallet.mnemonic "drop story maze lunch recall sail echo mobile box treat until document" --database.dbPath "./ganache-data" --server.port 8545

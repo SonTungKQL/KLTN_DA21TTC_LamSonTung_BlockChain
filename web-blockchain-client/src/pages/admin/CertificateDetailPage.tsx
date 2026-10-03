@@ -42,6 +42,7 @@ export function CertificateDetailPage() {
   }, [id]);
   const action = async (type: "retry" | "revoke") => {
     if (!id) return;
+    console.log("cc ");
     setBusy(true);
     try {
       const result = await post<Certificate>(
@@ -56,6 +57,7 @@ export function CertificateDetailPage() {
         type === "retry" ? "Đã xử lý retry" : "Đã thu hồi văn bằng",
       );
     } catch (e) {
+      console.log("oke ");
       setError(
         e instanceof ApiClientError ? e.message : "Không thể xử lý yêu cầu",
       );
@@ -85,7 +87,17 @@ export function CertificateDetailPage() {
           type="warning"
           showIcon
           message="Văn bằng đã bị thu hồi / hủy hiệu lực"
-          description={<><div>{data.revokeReason ?? "Không có lý do được ghi nhận."}</div>{data.revokedAt && <div>Thời điểm thu hồi: {new Date(data.revokedAt).toLocaleString("vi-VN")}</div>}</>}
+          description={
+            <>
+              <div>{data.revokeReason ?? "Không có lý do được ghi nhận."}</div>
+              {data.revokedAt && (
+                <div>
+                  Thời điểm thu hồi:{" "}
+                  {new Date(data.revokedAt).toLocaleString("vi-VN")}
+                </div>
+              )}
+            </>
+          }
         />
       )}
       <Card title="Thông tin văn bằng">
@@ -147,9 +159,19 @@ export function CertificateDetailPage() {
             {
               key: "revokeTx",
               label: "Giao dịch thu hồi",
-              children: data.revocationTransactionHash ? <Typography.Text copyable>{data.revocationTransactionHash}</Typography.Text> : "—",
+              children: data.revocationTransactionHash ? (
+                <Typography.Text copyable>
+                  {data.revocationTransactionHash}
+                </Typography.Text>
+              ) : (
+                "—"
+              ),
             },
-            { key: "revokeBlock", label: "Block thu hồi", children: data.revocationBlockNumber ?? "—" },
+            {
+              key: "revokeBlock",
+              label: "Block thu hồi",
+              children: data.revocationBlockNumber ?? "—",
+            },
             {
               key: "status",
               label: "Trạng thái",
@@ -163,7 +185,12 @@ export function CertificateDetailPage() {
           ]}
         />
       </Card>
-      {hasQr && id && <CertificateVerificationQr endpoint={`/admin/certificates/${id}/verification-qr`} revoked={data.status === "REVOKED"} />}
+      {hasQr && id && (
+        <CertificateVerificationQr
+          endpoint={`/admin/certificates/${id}/verification-qr`}
+          revoked={data.status === "REVOKED"}
+        />
+      )}
       <Space className="section-card">
         {data.status === "BLOCKCHAIN_FAILED" && (
           <Button
@@ -195,8 +222,15 @@ export function CertificateDetailPage() {
         onOk={() => action("revoke")}
         okButtonProps={{ disabled: !reason.trim(), danger: true }}
       >
-        <Alert className="mb" type="warning" showIcon message="Thao tác này không xóa dữ liệu nhưng sẽ làm văn bằng không còn hợp lệ khi xác minh." />
-        <Typography.Paragraph>Nhập lý do thu hồi / hủy hiệu lực:</Typography.Paragraph>
+        <Alert
+          className="mb"
+          type="warning"
+          showIcon
+          message="Thao tác này không xóa dữ liệu nhưng sẽ làm văn bằng không còn hợp lệ khi xác minh."
+        />
+        <Typography.Paragraph>
+          Nhập lý do thu hồi / hủy hiệu lực:
+        </Typography.Paragraph>
         <Input.TextArea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
